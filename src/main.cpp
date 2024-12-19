@@ -32,7 +32,8 @@ int main(int argc, char ** argv) {
     for(size_t i = 0; i < samples; i += (N - overlap)) {
         for(size_t j = 0; j < N; ++j) {
             if(i + j < samples) {
-                double hann = 0.5 * (1.0 - cos(2 * M_PI * j / (N - 1))); //helps reduce spectral leakage 
+                //https://stackoverflow.com/questions/3555318/implement-hann-window
+                double hann = 0.5 * (1.0 - cos(TAU * j / (N - 1))); //helps reduce spectral leakage 
                 in[j] = input[i + j] * hann;
             } else {
                 //otherwise pad input
