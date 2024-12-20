@@ -57,7 +57,7 @@ int main(int argc, char ** argv) {
     matplot::xlabel("Frequency");
     matplot::ylabel("Magnitude");
     matplot::xlim({0, 6000});
-    //matplot::yticklabels({});
+    matplot::yticklabels({});
     const int THRESHOLD = 100;
     for(size_t i = 1; i < aggr_output.size()-1; ++i) {
         if(aggr_output[i] > aggr_output[i-1] && aggr_output[i] > aggr_output[i + 1] && aggr_output[i] > THRESHOLD)
