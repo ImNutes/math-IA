@@ -1,8 +1,7 @@
-#include <matplot/matplot.h>
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <format>
+//#include <format>
 #include <sndfile.hh>
 #include "kiss_fftr.h"
 #define PI 3.14159265358979323846
@@ -11,7 +10,7 @@
 
 int main(int argc, char ** argv) {
     SndfileHandle file;
-    std::string filename = "audio/test.wav";
+    std::string filename = "audio/test1.wav";
     if(argc > 1) {
         filename = argv[1];
     }
@@ -21,7 +20,10 @@ int main(int argc, char ** argv) {
     float in[samples];
     kiss_fft_cpx out[samples];
     file.read(input.data(), samples);
-    std::cout << "writing samples\n";
+    if(file.error()) throw std::runtime_error(file.strError());
+    // for(auto i : input) {
+    //     std::cout << i << '\n';
+    // }
     int N = 32768; //size of a chunk
     int overlap = N/2;
     kiss_fftr_cfg cfg = kiss_fftr_alloc(N, 0, nullptr, nullptr);
@@ -51,18 +53,13 @@ int main(int argc, char ** argv) {
     for(size_t i = 0; i < aggr_output.size(); ++i) {
         aggr_output[i] /= (double)chunk;
         freq[i] = i * (double)file.samplerate()/N;
+        // std::cout << freq[i] << " " << aggr_output[i] << '\n';
     }
-    matplot::plot(freq, aggr_output);
-    matplot::title("Frequency vs Magnitude");
-    matplot::xlabel("Frequency");
-    matplot::ylabel("Magnitude");
-    matplot::xlim({0, 6000});
-    matplot::yticklabels({});
     const int THRESHOLD = 100;
     for(size_t i = 1; i < aggr_output.size()-1; ++i) {
-        if(aggr_output[i] > aggr_output[i-1] && aggr_output[i] > aggr_output[i + 1] && aggr_output[i] > THRESHOLD)
-            matplot::text(freq[i] + 5, aggr_output[i], std::format("{:.4g}", freq[i]));
+        if(aggr_output[i] > aggr_output[i-1] && aggr_output[i] > aggr_output[i + 1] && aggr_output[i] > THRESHOLD) {
+            std::cout << freq[i] << " : " << aggr_output[i] << '\n';
+        }
     }
-    matplot::show();
     return 0;
 }
